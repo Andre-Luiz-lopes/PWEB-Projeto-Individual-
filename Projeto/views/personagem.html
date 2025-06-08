@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Adivinhe o Personagem</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+
+</head>
+<body>
+
+  <div class="bg-overlay"></div>
+  <div class="container">
+    <img src="/images/logo-hajime-no-ippo.png" alt="Hajime no Ippo" class="logo">
+    <h1>Adivinhe o Personagem</h1>
+    <div id="personagem-container"></div>
+    <button class="btn" onclick="window.location.href='/'">Voltar</button>
+  </div>
+
+  <script>
+    let personagens;
+    let atual = 0;
+    let acertos = 0;
+
+    fetch('/api/personagens')
+      .then(res => res.json())
+      .then(data => {
+        personagens = data;
+        mostrarPersonagem();
+      });
+
+    function mostrarPersonagem() {
+      if (atual >= personagens.length) {
+        document.getElementById('personagem-container').innerHTML = `<h2>Você acertou ${acertos} de ${personagens.length}!</h2>`;
+        return;
+      }
+      const p = personagens[atual];
+      let html = `<img src="${p.imagem}" alt="Personagem" class="personagem-img"><br>`;
+      html += `<p class="dica">Dica: ${p.dica}</p>`;
+      html += `<input id="resposta" class="input-resposta" placeholder="Digite o nome"><button class="btn" onclick="responder()">Responder</button>`;
+      document.getElementById('personagem-container').innerHTML = html;
+    }
+
+    function responder() {
+      const resposta = document.getElementById('resposta').value.trim();
+      if (resposta.toLowerCase() === personagens[atual].nome.toLowerCase()) acertos++;
+      atual++;
+      mostrarPersonagem();
+    }
+  </script>
+  
+</body>
+</html>
